@@ -69,16 +69,23 @@ export const findCandidates = async (
     `
       )
       .join('')}
+
+    - ❌ to dismiss
     `
   });
 
-  await db
-    .insert(messages)
-    .values({
-      animeId: anime.id,
-      data: candidates,
-      discordMessageId: discordMessage.id
-    })
+  await Promise.all([
+    discordMessage.react('1️⃣'),
+    discordMessage.react('2️⃣'),
+    discordMessage.react('3️⃣'),
+    discordMessage.react('❌')
+  ]);
+
+  await db.insert(messages).values({
+    animeId: anime.id,
+    data: candidates,
+    discordMessageId: discordMessage.id
+  });
 
   console.log('Candidates sent to channel.');
 

@@ -2,7 +2,7 @@ import { Events } from 'discord.js';
 import { event } from '../utils/discord/event.js';
 import { db } from '../db/index.js';
 import { and, eq } from 'drizzle-orm';
-import { messages } from '../db/schema.js';
+import { animes, messages } from '../db/schema.js';
 import { downloadTorrent } from '../utils/anime.js';
 
 const emojiToNumber: Record<string, number | undefined> = {
@@ -14,6 +14,7 @@ const emojiToNumber: Record<string, number | undefined> = {
 export default event(
   Events.MessageReactionAdd,
   async ({ torrentClient, client }, reaction, user) => {
+    if (user.bot) return;
     if (reaction.partial) {
       await reaction.fetch();
     }
@@ -30,6 +31,18 @@ export default event(
       with: { anime: true }
     });
     if (!relatedMessage) return;
+
+    if (reaction.emoji.name === '❌') {
+      await db
+        .update(messages)
+        .set({ isStale: true })
+        .where(eq(messages.id, relatedMessage.id));
+      await db
+        .update(animes)
+        .set({ status: 'idle' })
+        .where(and(eq(animes.id, relatedMessage.anime.id)));
+      return;
+    }
 
     const number = emojiToNumber[reaction.emoji.name ?? ''];
     if (!number && number !== 0) return;
