@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  db:
+    build: .
+    container_name: anime-sync
+    volumes:
+      - ./database.db:/app/database.db
+      - /home/elbarae/uploads/anime/anime-sync:/app/torrent
+    env_file: ./.env
