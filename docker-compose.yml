@@ -5,6 +5,6 @@ services:
     build: .
     container_name: anime-sync
     volumes:
-      - ./database.db:/app/database.db
+      - ./database:/app/database
       - /home/elbarae/uploads/anime/anime-sync:/app/torrent
     env_file: ./.env
