@@ -11,7 +11,8 @@
     "start:prod": "node build/index.js",
     "deploy": "ts-node src/scripts/deploy.ts",
     "db:generate": "drizzle-kit generate:sqlite",
-    "db:migrate": "ts-node src/db/migrate.ts"
+    "db:migrate": "ts-node src/db/migrate.ts",
+    "db:migrate:prod": "node build/db/migrate.js"
   },
   "dependencies": {
     "better-sqlite3": "^9.2.2",
