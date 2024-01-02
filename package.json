@@ -1,0 +1,38 @@
+{
+  "name": "anime-sync",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "rimraf build && tsc",
+    "start": "ts-node src/index.ts",
+    "start:dev": "nodemon src/index.ts",
+    "start:prod": "node build/index.js",
+    "deploy": "ts-node src/scripts/deploy",
+    "db:generate": "drizzle-kit generate:sqlite",
+    "db:migrate": "ts-node src/db/migrate.ts"
+  },
+  "dependencies": {
+    "better-sqlite3": "^9.2.2",
+    "discord.js": "^14.7.1",
+    "dotenv": "^16.0.3",
+    "drizzle-orm": "^0.29.2",
+    "nyaapi": "^2.4.4",
+    "webtorrent": "^2.1.32"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/nyaapi": "^2.4.3",
+    "@types/node": "^18.11.10",
+    "@types/webtorrent": "^0.109.7",
+    "drizzle-kit": "^0.20.9",
+    "nodemon": "^2.0.20",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
