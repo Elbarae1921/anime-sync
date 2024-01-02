@@ -9,7 +9,7 @@
     "start": "ts-node src/index.ts",
     "start:dev": "nodemon src/index.ts",
     "start:prod": "node build/index.js",
-    "deploy": "ts-node src/scripts/deploy",
+    "deploy": "ts-node src/scripts/deploy.ts",
     "db:generate": "drizzle-kit generate:sqlite",
     "db:migrate": "ts-node src/db/migrate.ts"
   },

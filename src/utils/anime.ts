@@ -79,7 +79,6 @@ export const findCandidates = async (
       data: candidates,
       discordMessageId: discordMessage.id
     })
-    .returning();
 
   console.log('Candidates sent to channel.');
 

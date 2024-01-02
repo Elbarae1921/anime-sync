@@ -9,7 +9,8 @@
     "outDir": "build/",
     "sourceMap": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strictNullChecks": true
   },
   "ts-node": {
     "esm": true

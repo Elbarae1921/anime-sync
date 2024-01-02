@@ -3,11 +3,25 @@ import { command } from '../utils/discord/command.js';
 import { db } from '../db/index.js';
 import { animes } from '../db/schema.js';
 import { Reply } from '../utils/discord/reply.js';
-import { findCandidates } from '../utils/anime.js';
+import { and, eq } from 'drizzle-orm';
+
+type NoUndefinedField<T> = {
+  [P in keyof T]-?: NoUndefinedField<NonNullable<T[P]>>;
+};
+
+const constructPayload = <T>(object: T): NoUndefinedField<T> => {
+  const payload = {};
+  for (const key in object) {
+    if (object[key] !== null && object[key] !== undefined) {
+      (payload as T)[key] = object[key];
+    }
+  }
+  return payload as NoUndefinedField<T>;
+};
 
 const meta = new SlashCommandBuilder()
-  .setName('add-anime')
-  .setDescription('Add a new anime.')
+  .setName('edit-anime')
+  .setDescription('Edit an anime.')
   .addStringOption((option) =>
     option
       .setName('name')
@@ -23,22 +37,17 @@ const meta = new SlashCommandBuilder()
       .setRequired(true)
   )
   .addIntegerOption((option) =>
-    option
-      .setName('episode')
-      .setDescription('The latest episode of the anime')
-      .setRequired(true)
+    option.setName('episode').setDescription('The latest episode of the anime')
   )
   .addIntegerOption((option) =>
     option
       .setName('max-episode')
       .setDescription('The number of the last episode of the anime')
-      .setRequired(true)
   )
   .addStringOption((option) =>
     option
       .setName('day-of-release')
       .setDescription('Day of release of the anime')
-      .setRequired(true)
       .addChoices(
         { name: 'Monday', value: 'monday' },
         { name: 'Tuesday', value: 'tuesday' },
@@ -48,12 +57,6 @@ const meta = new SlashCommandBuilder()
         { name: 'Saturday', value: 'saturday' },
         { name: 'Sunday', value: 'sunday' }
       )
-  )
-  .addBooleanOption((option) =>
-    option
-      .setName('current')
-      .setDescription('Download the current episode?')
-      .setRequired(false)
   );
 
 export default command(meta, async ({ interaction }) => {
@@ -61,32 +64,34 @@ export default command(meta, async ({ interaction }) => {
   const season = interaction.options.getInteger('season');
   const episode = interaction.options.getInteger('episode');
   const maxEpisode = interaction.options.getInteger('max-episode');
-  const dayOfRelease = interaction.options.getString(
-    'day-of-release'
-  ) as typeof animes.$inferSelect.dayOfRelease;
-  const current = interaction.options.getBoolean('current');
+  const dayOfRelease = interaction.options.getString('day-of-release') as
+    | typeof animes.$inferSelect.dayOfRelease
+    | null;
 
-  if (!name || !season || !episode || !maxEpisode || !dayOfRelease) {
+  if (!name || !season) {
     return interaction.reply(Reply.error('All arguments are required.'));
   }
 
-  const [anime] = await db
-    .insert(animes)
-    .values({
-      name,
-      season,
-      episode,
-      maxEpisode,
-      dayOfRelease,
-      status: 'idle'
-    })
-    .returning();
+  let anime = await db.query.animes.findFirst({
+    where: and(eq(animes.name, name), eq(animes.season, season))
+  });
 
-  if (current) {
-    findCandidates(anime, interaction.client);
+  if (!anime) {
+    return interaction.reply(Reply.error('No matching anime found'));
   }
 
+  const data = {
+    episode,
+    maxEpisode,
+    dayOfRelease,
+    status: 'idle' as typeof animes.$inferSelect.status
+  };
+
+  const payload = constructPayload(data);
+
+  [anime] = await db.update(animes).set(payload).returning();
+
   return interaction.reply({
-    content: `Added \nName: ${anime.name} \nSeason: ${anime.season} \nEpisode: ${anime.episode} \nMax Episode: ${anime.maxEpisode} \nDay of Release: ${anime.dayOfRelease} \nCurrent: ${current}`
+    content: `Updated\nName: **${anime.name}**\nSeason: ${anime.season}\nEpisode: ${anime.episode}\nMax Episode: ${anime.maxEpisode}\nDay of Release: ${anime.dayOfRelease}`
   });
 });
