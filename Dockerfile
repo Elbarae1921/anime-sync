@@ -20,6 +20,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY package.json ./
 COPY yarn.lock ./
+COPY drizzle ./drizzle/
 COPY --from=build /app/build ./build/
 COPY --from=deps /app/node_modules ./node_modules/
 RUN ls -a
