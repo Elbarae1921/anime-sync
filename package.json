@@ -6,12 +6,12 @@
   "type": "module",
   "scripts": {
     "build": "rimraf build && tsc",
-    "start": "ts-node src/index.ts",
-    "start:dev": "nodemon src/index.ts",
+    "start": "tsx src/index.ts",
+    "start:dev": "tsx watch src/index.ts",
     "start:prod": "node build/index.js",
-    "deploy": "ts-node src/scripts/deploy.ts",
+    "deploy": "tsx src/scripts/deploy.ts",
     "db:generate": "drizzle-kit generate:sqlite",
-    "db:migrate": "ts-node src/db/migrate.ts",
+    "db:migrate": "tsx src/db/migrate.ts",
     "db:migrate:prod": "node build/db/migrate.js"
   },
   "dependencies": {
@@ -24,13 +24,12 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.8",
-    "@types/nyaapi": "^2.4.3",
     "@types/node": "^18.11.10",
+    "@types/nyaapi": "^2.4.3",
     "@types/webtorrent": "^0.109.7",
     "drizzle-kit": "^0.20.9",
-    "nodemon": "^2.0.20",
     "rimraf": "^3.0.2",
-    "ts-node": "^10.9.1",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.3"
   },
   "keywords": [],
