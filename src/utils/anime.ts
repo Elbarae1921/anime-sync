@@ -6,10 +6,14 @@ import { Client, TextChannel } from 'discord.js';
 import { NyaaResult } from '../types.js';
 import WebTorrent from 'webtorrent';
 
-const MAX_RESULT_COUNT = 10;
+const formatSeasonEpisode = (season: number, episode: number) => {
+  return `S${season.toString().padStart(2, '0')}E${episode
+    .toString()
+    .padStart(2, '0')}`;
+};
 
 export const search = ({ title }: { title: string }) => {
-  return si.search(title, MAX_RESULT_COUNT, {
+  return si.search(title, 3, {
     category: '1_2',
     sort: 'seeders',
     direction: 'desc'
@@ -22,7 +26,7 @@ export const findCandidates = async (
 ) => {
   console.log('Finding candidates for: ', anime.name);
   const results = await search({
-    title: `${anime.name} ${anime.season} ${anime.episode}`
+    title: `${anime.name} ${formatSeasonEpisode(anime.season, anime.episode)}`
   });
 
   console.log('Found candidates: ', results.length);
@@ -74,13 +78,6 @@ export const findCandidates = async (
     discordMessage.react('1️⃣'),
     discordMessage.react('2️⃣'),
     discordMessage.react('3️⃣'),
-    discordMessage.react('4️⃣'),
-    discordMessage.react('5️⃣'),
-    discordMessage.react('6️⃣'),
-    discordMessage.react('7️⃣'),
-    discordMessage.react('8️⃣'),
-    discordMessage.react('9️⃣'),
-    discordMessage.react('🔟'),
     discordMessage.react('❌')
   ]);
 

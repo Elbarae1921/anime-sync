@@ -8,14 +8,7 @@ import { downloadTorrent } from '../utils/anime.js';
 const emojiToNumber: Record<string, number | undefined> = {
   '1️⃣': 0,
   '2️⃣': 1,
-  '3️⃣': 2,
-  '4️⃣': 3,
-  '5️⃣': 4,
-  '6️⃣': 5,
-  '7️⃣': 6,
-  '8️⃣': 7,
-  '9️⃣': 8,
-  '🔟': 9
+  '3️⃣': 2
 };
 
 export default event(
