@@ -164,6 +164,7 @@ export const downloadTorrent = async (
           .join('')}
         `
         });
+        torrent.destroy();
         if (message.anime.episode === message.anime.maxEpisode) {
           await db
             .update(animes)
