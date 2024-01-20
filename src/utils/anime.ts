@@ -16,19 +16,6 @@ export const search = ({ title }: { title: string }) => {
   });
 };
 
-const numberToEmoji: Record<number, string> = {
-  1: '1️⃣',
-  2: '2️⃣',
-  3: '3️⃣',
-  4: '4️⃣',
-  5: '5️⃣',
-  6: '6️⃣',
-  7: '7️⃣',
-  8: '8️⃣',
-  9: '9️⃣',
-  10: '🔟'
-};
-
 export const findCandidates = async (
   anime: typeof animes.$inferSelect,
   client: Client
@@ -69,7 +56,7 @@ export const findCandidates = async (
     ${candidates
       .map(
         (candidate, i) => `
-    - ${numberToEmoji[i + 1]} :
+    - ${i === 0 ? ':one:' : i === 1 ? ':two:' : ':three:'} :
       - Name: ${candidate.name}
       - Size: **${candidate.size}**
       - Seeders: **${candidate.seeders}**
@@ -84,9 +71,16 @@ export const findCandidates = async (
   });
 
   await Promise.all([
-    ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) =>
-      discordMessage.react(numberToEmoji[i])
-    ),
+    discordMessage.react('1️⃣'),
+    discordMessage.react('2️⃣'),
+    discordMessage.react('3️⃣'),
+    discordMessage.react('4️⃣'),
+    discordMessage.react('5️⃣'),
+    discordMessage.react('6️⃣'),
+    discordMessage.react('7️⃣'),
+    discordMessage.react('8️⃣'),
+    discordMessage.react('9️⃣'),
+    discordMessage.react('🔟'),
     discordMessage.react('❌')
   ]);
 
