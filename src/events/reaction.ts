@@ -30,6 +30,11 @@ export default event(
       ),
       with: { anime: true }
     });
+
+    const discordMessageIndex = JSON.parse(
+      relatedMessage?.discordMessageIds ?? ''
+    ).indexOf(reaction.message.id);
+
     if (!relatedMessage) return;
 
     if (reaction.emoji.name === '❌') {
@@ -44,10 +49,12 @@ export default event(
       return;
     }
 
-    const number = emojiToNumber[reaction.emoji.name ?? ''];
-    if (!number && number !== 0) return;
+    const choiceNumber = emojiToNumber[reaction.emoji.name ?? ''];
+    if (!choiceNumber && choiceNumber !== 0) return;
 
-    const selectedTorrent = relatedMessage.data[number];
+    const index = choiceNumber + 3 * discordMessageIndex;
+
+    const selectedTorrent = relatedMessage.data[index];
 
     await downloadTorrent(
       selectedTorrent,
