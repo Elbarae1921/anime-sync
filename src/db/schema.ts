@@ -39,7 +39,7 @@ export const messages = sqliteTable('messages', {
   animeId: integer('animeId')
     .notNull()
     .references(() => animes.id),
-  discordMessageId: text('discordMessageId').notNull(),
+  discordMessageIds: text('discordMessageIds').notNull(),
   data: text('data', { mode: 'json' }).notNull().$type<NyaaResult[]>(),
   isStale: integer('isStale', { mode: 'boolean' }).notNull().default(false)
 });

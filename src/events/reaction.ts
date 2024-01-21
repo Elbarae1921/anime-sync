@@ -1,7 +1,7 @@
 import { Events } from 'discord.js';
 import { event } from '../utils/discord/event.js';
 import { db } from '../db/index.js';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, ilike, like } from 'drizzle-orm';
 import { animes, messages } from '../db/schema.js';
 import { downloadTorrent } from '../utils/anime.js';
 
@@ -25,7 +25,7 @@ export default event(
 
     const relatedMessage = await db.query.messages.findFirst({
       where: and(
-        eq(messages.discordMessageId, reaction.message.id),
+        like(messages.discordMessageIds, `%${reaction.message.id}%`),
         eq(messages.isStale, false)
       ),
       with: { anime: true }

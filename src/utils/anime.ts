@@ -5,15 +5,14 @@ import { si } from 'nyaapi';
 import { Client, TextChannel } from 'discord.js';
 import { NyaaResult } from '../types.js';
 import WebTorrent from 'webtorrent';
+import { chunkify } from './chunkify.js';
 
 const formatSeasonEpisode = (season: number, episode: number) => {
-  return `S${season.toString().padStart(2, '0')}E${episode
-    .toString()
-    .padStart(2, '0')}`;
+  return `${season} ${episode}`;
 };
 
 export const search = ({ title }: { title: string }) => {
-  return si.search(title, 3, {
+  return si.search(title, 12, {
     category: '1_2',
     sort: 'seeders',
     direction: 'desc'
@@ -52,12 +51,19 @@ export const findCandidates = async (
     process.env.CHANNEL_ID
   )) as TextChannel;
 
-  const discordMessage = await channel.send({
-    content: `
-    **ℹ️ Please choose a torrent for ${anime.name} season ${
-      anime.season
-    } episode ${anime.episode}**
-    ${candidates
+  const chunkedCandidates = chunkify(candidates, 3);
+
+  const messageIds = [] as string[];
+
+  for (const candidateGroup of chunkedCandidates) {
+    const discordMessage = await channel.send({
+      content: `
+    **${
+      chunkedCandidates.indexOf(candidateGroup)
+        ? '[...]'
+        : `ℹ️ Please choose a torrent for ${anime.name} season ${anime.season} episode ${anime.episode}`
+    }**
+    ${candidateGroup
       .map(
         (candidate, i) => `
     - ${i === 0 ? ':one:' : i === 1 ? ':two:' : ':three:'} :
@@ -72,19 +78,22 @@ export const findCandidates = async (
 
     - ❌ to dismiss
     `
-  });
+    });
 
-  await Promise.all([
-    discordMessage.react('1️⃣'),
-    discordMessage.react('2️⃣'),
-    discordMessage.react('3️⃣'),
-    discordMessage.react('❌')
-  ]);
+    await Promise.all([
+      discordMessage.react('1️⃣'),
+      discordMessage.react('2️⃣'),
+      discordMessage.react('3️⃣'),
+      discordMessage.react('❌')
+    ]);
+
+    messageIds.push(discordMessage.id);
+  }
 
   await db.insert(messages).values({
     animeId: anime.id,
     data: candidates,
-    discordMessageId: discordMessage.id
+    discordMessageIds: JSON.stringify(messageIds)
   });
 
   console.log('Candidates sent to channel.');
@@ -164,7 +173,6 @@ export const downloadTorrent = async (
           .join('')}
         `
         });
-        torrent.destroy();
         if (message.anime.episode === message.anime.maxEpisode) {
           await db
             .update(animes)

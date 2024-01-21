@@ -8,6 +8,13 @@
       "when": 1704165112600,
       "tag": "0000_awesome_juggernaut",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1705796833115,
+      "tag": "0002_thankful_silver_centurion",
+      "breakpoints": true
     }
   ]
 }
